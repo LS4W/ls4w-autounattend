@@ -175,7 +175,7 @@ namespace WindowsBuilder
             firewallGroup.Action = "add";
             firewallGroup.KeyValue = "RemoteDesktop";
             firewallGroup.Active = "true";
-            firewallGroup.Group = "Remote Desktop";
+            firewallGroup.Group = "@FirewallAPI.dll.-28752";
             firewallGroup.Profile = "all";
 
             firewallGroups.FirewallGroup = firewallGroup;
