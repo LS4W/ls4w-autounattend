@@ -5,6 +5,7 @@ using System.Xml.Serialization;
 using WindowsBuilder.WindowsUnattendObject;
 using WindowsBuilder.WindowsUnattendObject.Components;
 using CommandLine;
+using System.Collections.Generic;
 
 namespace WindowsBuilder
 {
@@ -12,15 +13,42 @@ namespace WindowsBuilder
     {
 
         public class Options {
-            
+            [Option('l', "locale", Required=false, Default="0409:00000409")]
+            public string locale {get; set;}
+
+            [Option('g',"language", Required=false, Default="EN-US")]
+            public string language {get;set;}
+
+            [Option('o', "organization", Required=false, Default="LS4W")]
+            public string organization {get;set;}
+
+            [Option('k', "product-key", Required=false, Default="VK7JG-NPHTM-C97JM-9MPGT-3V66T")]
+            public string productkey {get;set;}
+
+            [Option('u', "username", Required=false, Default="LS4W")]
+            public string username {get;set;}
+
+            [Option('p', "password", Required=false, Default="LS4WPass")]
+            public string password {get;set;}
+
+            [Option('n', "computername", Required=false, Default="LS4W")]
+            public string computername {get;set;}
         }
 
         static void Main(string[] args)
         {
-            string language = "EN-US";
-            string locale = "0409:00000409";
-            string organization = "L4WS";
+            CommandLine.Parser.Default.ParseArguments<Options>(args)
+            .WithParsed(RunOptions)
+            .WithNotParsed(HandleParseError);
 
+        }
+
+        static void HandleParseError(IEnumerable<Error> errors) {
+            
+        }
+
+        static void RunOptions(Options options) {
+            
             Unattend unattendObject = new Unattend();
 
             Settings windowsPESettings  = new Settings();
@@ -34,11 +62,11 @@ namespace WindowsBuilder
             /// SETUP UI COMPONENT
             SetupUIComponent setupUIComponent = new SetupUIComponent();
 
-            setupUIComponent.SetupUILanguage.UILanguage = "EN-US";
-            setupUIComponent.InputLocale    = locale;
-            setupUIComponent.SystemLocale   = language;
-            setupUIComponent.UILanguage     = language;
-            setupUIComponent.UserLocale     = language;
+            setupUIComponent.SetupUILanguage.UILanguage = options.language;
+            setupUIComponent.InputLocale    = options.locale;
+            setupUIComponent.SystemLocale   = options.language;
+            setupUIComponent.UILanguage     = options.language;
+            setupUIComponent.UserLocale     = options.language;
 
 
             /// SETUP DISK COMPONENT
@@ -113,8 +141,8 @@ namespace WindowsBuilder
             //SETUP USER DATA
             UserData userData = new UserData();
             userData.AcceptEula = "true";
-            userData.Organization = organization;
-            userData.setProductKey("VK7JG-NPHTM-C97JM-9MPGT-3V66T");
+            userData.Organization = options.organization;
+            userData.setProductKey(options.productkey);
             setupDiskComponent.UserData = userData;
 
             //SETUP IMAGE INSTALL
@@ -128,10 +156,10 @@ namespace WindowsBuilder
             //SETUP OOBE
             OobeUIComponent oobeUIComponent = new OobeUIComponent();
 
-            oobeUIComponent.InputLocale = locale;
-            oobeUIComponent.SystemLocale = language;
-            oobeUIComponent.UILanguage = language;
-            oobeUIComponent.UserLocale = language;
+            oobeUIComponent.InputLocale = options.locale;
+            oobeUIComponent.SystemLocale = options.language;
+            oobeUIComponent.UILanguage = options.language;
+            oobeUIComponent.UserLocale = options.language;
 
             //SETUP USER ACCOUNT
             OobeAccountsComponent oobeAccountsComponent = new OobeAccountsComponent();
@@ -142,12 +170,12 @@ namespace WindowsBuilder
             
             localAccount.Action = "add";
             localAccount.Description = "Local admin account";
-            localAccount.DisplayName = "LS4WAdmin";
+            localAccount.DisplayName = options.username;
             localAccount.Group = "Administrators";
-            localAccount.Name = "LS4WAdmin";
+            localAccount.Name = options.username;
             
             Password password = new Password();
-            password.Value = "LS4WPass";
+            password.Value = options.password;
             password.PlainText = "true";
             localAccount.Password = password;
 
@@ -163,6 +191,11 @@ namespace WindowsBuilder
             oOBE.ProtectYourPC = "1";
             oOBE.HideWirelessSetupInOOBE = "true";
             oobeAccountsComponent.OOBE = oOBE;
+
+            //SETUP SYSTEM INFORMATION
+            SystemInformationComponent systemInformationComponent = new SystemInformationComponent();
+            systemInformationComponent.ComputerName = options.computername;
+
 
             //SETUP TERMINAL SERVICES & FIREWALL (ENABLE RDP)
             TerminalServicesComponent terminalServicesComponent = new TerminalServicesComponent();
@@ -191,6 +224,7 @@ namespace WindowsBuilder
             windowsPESettings.Component.Add(setupDiskComponent);
             oobeSettings.Component.Add(oobeUIComponent);
             oobeSettings.Component.Add(oobeAccountsComponent);
+            specializeSettings.Component.Add(systemInformationComponent);
             specializeSettings.Component.Add(terminalServicesComponent);
             specializeSettings.Component.Add(networkingMPSSVCComponent);
             specializeSettings.Component.Add(rdpExtensionComponent);

@@ -34,6 +34,9 @@ namespace WindowsBuilder.WindowsUnattendObject
 		public string SystemLocale { get; set; }
 		[XmlElement(ElementName="UILanguage", Namespace="urn:schemas-microsoft-com:unattend")]
 		public string UILanguage { get; set; }
+
+		[XmlElement(ElementName="ComputerName", Namespace="urn:schemas-microsoft-com:unattend")]
+		public string ComputerName { get; set; }
 		[XmlElement(ElementName="UserLocale", Namespace="urn:schemas-microsoft-com:unattend")]
 		public string UserLocale { get; set; }
 		[XmlAttribute(AttributeName="name")]
