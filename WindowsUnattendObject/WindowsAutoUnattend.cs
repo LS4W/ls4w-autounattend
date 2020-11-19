@@ -6,6 +6,8 @@
 using System;
 using System.Xml.Serialization;
 using System.Collections.Generic;
+using WindowsBuilder.WindowsUnattendObject.Components;
+
 namespace WindowsBuilder.WindowsUnattendObject
 {
 	[XmlRoot(ElementName="SetupUILanguage", Namespace="urn:schemas-microsoft-com:unattend")]
@@ -15,6 +17,8 @@ namespace WindowsBuilder.WindowsUnattendObject
 	}
 
 	[XmlRoot(ElementName="component", Namespace="urn:schemas-microsoft-com:unattend")]
+	[XmlInclude(typeof(SetupUIComponent))]
+	[XmlInclude(typeof(SetupDiskComponent))]
 	public class Component {
 		[XmlElement(ElementName="SetupUILanguage", Namespace="urn:schemas-microsoft-com:unattend")]
 		public SetupUILanguage SetupUILanguage { get; set; }
@@ -56,6 +60,10 @@ namespace WindowsBuilder.WindowsUnattendObject
 		public FirewallGroups FirewallGroups { get; set; }
 		[XmlElement(ElementName="UserAuthentication", Namespace="urn:schemas-microsoft-com:unattend")]
 		public string UserAuthentication { get; set; }
+
+		public Component() {
+			
+		}
 	}
 
 	[XmlRoot(ElementName="CreatePartition", Namespace="urn:schemas-microsoft-com:unattend")]
@@ -70,12 +78,17 @@ namespace WindowsBuilder.WindowsUnattendObject
 		public string Action { get; set; }
 		[XmlElement(ElementName="Extend", Namespace="urn:schemas-microsoft-com:unattend")]
 		public string Extend { get; set; }
+
 	}
 
 	[XmlRoot(ElementName="CreatePartitions", Namespace="urn:schemas-microsoft-com:unattend")]
 	public class CreatePartitions {
 		[XmlElement(ElementName="CreatePartition", Namespace="urn:schemas-microsoft-com:unattend")]
 		public List<CreatePartition> CreatePartition { get; set; }
+
+		public CreatePartitions() {
+			CreatePartition = new List<CreatePartition>();
+		}
 	}
 
 	[XmlRoot(ElementName="ModifyPartition", Namespace="urn:schemas-microsoft-com:unattend")]
@@ -100,6 +113,10 @@ namespace WindowsBuilder.WindowsUnattendObject
 	public class ModifyPartitions {
 		[XmlElement(ElementName="ModifyPartition", Namespace="urn:schemas-microsoft-com:unattend")]
 		public List<ModifyPartition> ModifyPartition { get; set; }
+
+		public ModifyPartitions() {
+			ModifyPartition = new List<ModifyPartition>();
+		}
 	}
 
 	[XmlRoot(ElementName="Disk", Namespace="urn:schemas-microsoft-com:unattend")]
@@ -114,6 +131,19 @@ namespace WindowsBuilder.WindowsUnattendObject
 		public string WillWipeDisk { get; set; }
 		[XmlAttribute(AttributeName="action", Namespace="http://schemas.microsoft.com/WMIConfig/2002/State")]
 		public string Action { get; set; }
+
+		public Disk() {
+			CreatePartitions = new CreatePartitions();
+			ModifyPartitions = new ModifyPartitions();
+		}
+
+		public void createPartition(CreatePartition partition) {
+			CreatePartitions.CreatePartition.Add(partition);
+		}
+
+		public void modifyPartition(ModifyPartition partition) {
+			ModifyPartitions.ModifyPartition.Add(partition);
+		}
 	}
 
 	[XmlRoot(ElementName="DiskConfiguration", Namespace="urn:schemas-microsoft-com:unattend")]

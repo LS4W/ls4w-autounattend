@@ -3,6 +3,7 @@ using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 using WindowsBuilder.WindowsUnattendObject;
+using WindowsBuilder.WindowsUnattendObject.Components;
 using CommandLine;
 
 namespace WindowsBuilder
@@ -30,11 +31,8 @@ namespace WindowsBuilder
             specializeSettings.Pass = "specialize";
             
             /// SETUP UI COMPONENT
-
-            Component setupUIComponent = new Component();
-            setupUIComponent.SetupUILanguage = new SetupUILanguage();
+            SetupUIComponent setupUIComponent = new SetupUIComponent();
             setupUIComponent.SetupUILanguage.UILanguage = "EN-US";
-
             setupUIComponent.InputLocale    = locale;
             setupUIComponent.SystemLocale   = language;
             setupUIComponent.UILanguage     = language;
@@ -45,13 +43,8 @@ namespace WindowsBuilder
 
             /// SETUP DISK COMPONENT
 
-            Component setupDiskComponent = new Component();
-            setupDiskComponent.DiskConfiguration = new DiskConfiguration();
-            setupDiskComponent.DiskConfiguration.Disk = new Disk();
-            setupDiskComponent.DiskConfiguration.Disk.CreatePartitions = new CreatePartitions();
-            setupDiskComponent.DiskConfiguration.Disk.ModifyPartitions = new ModifyPartitions();
-            setupDiskComponent.DiskConfiguration.Disk.CreatePartitions.CreatePartition = new System.Collections.Generic.List<CreatePartition>();
-            setupDiskComponent.DiskConfiguration.Disk.ModifyPartitions.ModifyPartition = new System.Collections.Generic.List<ModifyPartition>();
+            SetupDiskComponent setupDiskComponent = new SetupDiskComponent();
+            Disk disk = new Disk();
 
             CreatePartition primaryPartition    = new CreatePartition();
             CreatePartition efiPartition        = new CreatePartition();
@@ -74,10 +67,10 @@ namespace WindowsBuilder
             windowsPartition.Extend = "true";
             windowsPartition.Type   = "Primary";
 
-            setupDiskComponent.DiskConfiguration.Disk.CreatePartitions.CreatePartition.Add(primaryPartition);
-            setupDiskComponent.DiskConfiguration.Disk.CreatePartitions.CreatePartition.Add(efiPartition);
-            setupDiskComponent.DiskConfiguration.Disk.CreatePartitions.CreatePartition.Add(msrPartition);
-            setupDiskComponent.DiskConfiguration.Disk.CreatePartitions.CreatePartition.Add(windowsPartition);
+            disk.createPartition(primaryPartition);
+            disk.createPartition(efiPartition);
+            disk.createPartition(msrPartition);
+            disk.createPartition(windowsPartition);
 
             /// Setup Modify partitions
 
@@ -106,11 +99,12 @@ namespace WindowsBuilder
             windowsModifyPartition.Order        = "4";
             windowsModifyPartition.PartitionID  = "4";
 
-            setupDiskComponent.DiskConfiguration.Disk.ModifyPartitions.ModifyPartition.Add(primaryModifyPartition);
-            setupDiskComponent.DiskConfiguration.Disk.ModifyPartitions.ModifyPartition.Add(efiModifyPartition);
-            setupDiskComponent.DiskConfiguration.Disk.ModifyPartitions.ModifyPartition.Add(msrModifyPartition);
-            setupDiskComponent.DiskConfiguration.Disk.ModifyPartitions.ModifyPartition.Add(windowsModifyPartition);
+            disk.modifyPartition(primaryModifyPartition);
+            disk.modifyPartition(efiModifyPartition);
+            disk.modifyPartition(msrModifyPartition);
+            disk.modifyPartition(windowsModifyPartition);
 
+            setupDiskComponent.DiskConfiguration.Disk = disk;
 
 
             //Add components to settings
