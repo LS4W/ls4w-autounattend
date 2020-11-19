@@ -22,6 +22,9 @@ namespace WindowsBuilder.WindowsUnattendObject
 	[XmlInclude(typeof(OobeUIComponent))]
 	[XmlInclude(typeof(OobeAccountsComponent))]
 	[XmlInclude(typeof(SystemInformationComponent))]
+	[XmlInclude(typeof(NetworkingMPSSVCComponent))]
+	[XmlInclude(typeof(TerminalServicesComponent))]
+	[XmlInclude(typeof(RdpExtensionComponent))]
 	public class Component {
 		[XmlElement(ElementName="SetupUILanguage", Namespace="urn:schemas-microsoft-com:unattend")]
 		public SetupUILanguage SetupUILanguage { get; set; }
@@ -64,13 +67,12 @@ namespace WindowsBuilder.WindowsUnattendObject
 		[XmlElement(ElementName="UserAuthentication", Namespace="urn:schemas-microsoft-com:unattend")]
 		public string UserAuthentication { get; set; }
 
+
 		public Component() {
 			ProcessorArchitecture = "amd64";
             PublicKeyToken = "31bf3856ad364e35";
             Language = "neutral";
             VersionScope = "nonSxS";
-            Wcm = "https://schemas.microsoft.com/WMIConfig/2002/State";
-            Xsi = "http://www.w3.org/2001/XMLSchema-instance";
 		}
 	}
 
@@ -86,6 +88,10 @@ namespace WindowsBuilder.WindowsUnattendObject
 		public string Action { get; set; }
 		[XmlElement(ElementName="Extend", Namespace="urn:schemas-microsoft-com:unattend")]
 		public string Extend { get; set; }
+
+		public CreatePartition() {
+			Action = "add";
+		}
 
 	}
 
@@ -115,6 +121,11 @@ namespace WindowsBuilder.WindowsUnattendObject
 		public string Action { get; set; }
 		[XmlElement(ElementName="Letter", Namespace="urn:schemas-microsoft-com:unattend")]
 		public string Letter { get; set; }
+
+
+		public ModifyPartition() {
+			Action = "add";
+		}
 	}
 
 	[XmlRoot(ElementName="ModifyPartitions", Namespace="urn:schemas-microsoft-com:unattend")]
@@ -303,6 +314,10 @@ namespace WindowsBuilder.WindowsUnattendObject
 	public class FirewallGroups {
 		[XmlElement(ElementName="FirewallGroup", Namespace="urn:schemas-microsoft-com:unattend")]
 		public FirewallGroup FirewallGroup { get; set; }
+
+		public FirewallGroups() {
+			FirewallGroup = new FirewallGroup();
+		}
 	}
 
 	[XmlRoot(ElementName="offlineImage", Namespace="urn:schemas-microsoft-com:cpi")]
@@ -321,6 +336,12 @@ namespace WindowsBuilder.WindowsUnattendObject
 		public OfflineImage OfflineImage { get; set; }
 		[XmlAttribute(AttributeName="xmlns")]
 		public string Xmlns { get; set; }
+
+
+		public Unattend() {
+
+
+		}
 	}
 
 }

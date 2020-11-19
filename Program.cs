@@ -33,7 +33,6 @@ namespace WindowsBuilder
             
             /// SETUP UI COMPONENT
             SetupUIComponent setupUIComponent = new SetupUIComponent();
-            setupUIComponent.Name = "Microsoft-Windows-International-Core-WinPE";
 
             setupUIComponent.SetupUILanguage.UILanguage = "EN-US";
             setupUIComponent.InputLocale    = locale;
@@ -45,9 +44,9 @@ namespace WindowsBuilder
             /// SETUP DISK COMPONENT
 
             SetupDiskComponent setupDiskComponent = new SetupDiskComponent();
-            setupDiskComponent.Name = "Microsoft-Windows-Setup";
             
             Disk disk = new Disk();
+            disk.Action = "add";
             disk.DiskID = "0";
             disk.WillWipeDisk = "true";
 
@@ -128,7 +127,6 @@ namespace WindowsBuilder
 
             //SETUP OOBE
             OobeUIComponent oobeUIComponent = new OobeUIComponent();
-            oobeUIComponent.Name = "Microsoft-Windows-International-Core";
 
             oobeUIComponent.InputLocale = locale;
             oobeUIComponent.SystemLocale = language;
@@ -137,7 +135,6 @@ namespace WindowsBuilder
 
             //SETUP USER ACCOUNT
             OobeAccountsComponent oobeAccountsComponent = new OobeAccountsComponent();
-            oobeAccountsComponent.Name = "Microsoft-Windows-Shell-Setup";
 
             UserAccounts userAccounts = new UserAccounts();
             LocalAccounts localAccounts = new LocalAccounts();
@@ -148,6 +145,11 @@ namespace WindowsBuilder
             localAccount.DisplayName = "LS4WAdmin";
             localAccount.Group = "Administrators";
             localAccount.Name = "LS4WAdmin";
+            
+            Password password = new Password();
+            password.Value = "LS4WPass";
+            password.PlainText = "true";
+            localAccount.Password = password;
 
             localAccounts.LocalAccount = localAccount;
             userAccounts.LocalAccounts = localAccounts;
@@ -162,6 +164,26 @@ namespace WindowsBuilder
             oOBE.HideWirelessSetupInOOBE = "true";
             oobeAccountsComponent.OOBE = oOBE;
 
+            //SETUP TERMINAL SERVICES & FIREWALL (ENABLE RDP)
+            TerminalServicesComponent terminalServicesComponent = new TerminalServicesComponent();
+            terminalServicesComponent.FDenyTSConnections = "false";
+
+            NetworkingMPSSVCComponent networkingMPSSVCComponent = new NetworkingMPSSVCComponent();
+            FirewallGroups firewallGroups = new FirewallGroups();
+            FirewallGroup firewallGroup = new FirewallGroup();
+
+            firewallGroup.Action = "add";
+            firewallGroup.KeyValue = "RemoteDesktop";
+            firewallGroup.Active = "true";
+            firewallGroup.Group = "Remote Desktop";
+            firewallGroup.Profile = "all";
+
+            firewallGroups.FirewallGroup = firewallGroup;
+            networkingMPSSVCComponent.FirewallGroups = firewallGroups;
+
+            //SETTING FOR ENABLE/DISABLE NLA 
+            RdpExtensionComponent rdpExtensionComponent = new RdpExtensionComponent();
+            rdpExtensionComponent.UserAuthentication = "0";
 
 
             //Add components to settings
@@ -169,6 +191,9 @@ namespace WindowsBuilder
             windowsPESettings.Component.Add(setupDiskComponent);
             oobeSettings.Component.Add(oobeUIComponent);
             oobeSettings.Component.Add(oobeAccountsComponent);
+            specializeSettings.Component.Add(terminalServicesComponent);
+            specializeSettings.Component.Add(networkingMPSSVCComponent);
+            specializeSettings.Component.Add(rdpExtensionComponent);
 
             unattendObject.Settings = new System.Collections.Generic.List<Settings>();
             unattendObject.Settings.Add(windowsPESettings);
