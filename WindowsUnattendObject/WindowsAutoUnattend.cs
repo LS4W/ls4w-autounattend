@@ -19,6 +19,9 @@ namespace WindowsBuilder.WindowsUnattendObject
 	[XmlRoot(ElementName="component", Namespace="urn:schemas-microsoft-com:unattend")]
 	[XmlInclude(typeof(SetupUIComponent))]
 	[XmlInclude(typeof(SetupDiskComponent))]
+	[XmlInclude(typeof(OobeUIComponent))]
+	[XmlInclude(typeof(OobeAccountsComponent))]
+	[XmlInclude(typeof(SystemInformationComponent))]
 	public class Component {
 		[XmlElement(ElementName="SetupUILanguage", Namespace="urn:schemas-microsoft-com:unattend")]
 		public SetupUILanguage SetupUILanguage { get; set; }
@@ -62,7 +65,12 @@ namespace WindowsBuilder.WindowsUnattendObject
 		public string UserAuthentication { get; set; }
 
 		public Component() {
-			
+			ProcessorArchitecture = "amd64";
+            PublicKeyToken = "31bf3856ad364e35";
+            Language = "neutral";
+            VersionScope = "nonSxS";
+            Wcm = "https://schemas.microsoft.com/WMIConfig/2002/State";
+            Xsi = "http://www.w3.org/2001/XMLSchema-instance";
 		}
 	}
 
@@ -172,6 +180,14 @@ namespace WindowsBuilder.WindowsUnattendObject
 	public class ImageInstall {
 		[XmlElement(ElementName="OSImage", Namespace="urn:schemas-microsoft-com:unattend")]
 		public OSImage OSImage { get; set; }
+
+		public ImageInstall() {
+			OSImage = new OSImage();
+		}
+
+		public void setInstallTo(InstallTo installTo) {
+			OSImage.InstallTo = installTo;
+		}
 	}
 
 	[XmlRoot(ElementName="ProductKey", Namespace="urn:schemas-microsoft-com:unattend")]
@@ -188,6 +204,14 @@ namespace WindowsBuilder.WindowsUnattendObject
 		public string AcceptEula { get; set; }
 		[XmlElement(ElementName="Organization", Namespace="urn:schemas-microsoft-com:unattend")]
 		public string Organization { get; set; }
+
+		public UserData() {
+			ProductKey = new ProductKey();
+		}
+
+		public void setProductKey(string key) {
+			ProductKey.Key = key;
+		}
 	}
 
 	[XmlRoot(ElementName="settings", Namespace="urn:schemas-microsoft-com:unattend")]
@@ -196,6 +220,10 @@ namespace WindowsBuilder.WindowsUnattendObject
 		public List<Component> Component { get; set; }
 		[XmlAttribute(AttributeName="pass")]
 		public string Pass { get; set; }
+
+		public Settings() {
+			Component = new List<Component>();
+		}
 	}
 
 	[XmlRoot(ElementName="OOBE", Namespace="urn:schemas-microsoft-com:unattend")]
@@ -210,6 +238,7 @@ namespace WindowsBuilder.WindowsUnattendObject
 		public string HideWirelessSetupInOOBE { get; set; }
 		[XmlElement(ElementName="ProtectYourPC", Namespace="urn:schemas-microsoft-com:unattend")]
 		public string ProtectYourPC { get; set; }
+
 	}
 
 	[XmlRoot(ElementName="Password", Namespace="urn:schemas-microsoft-com:unattend")]
@@ -240,12 +269,20 @@ namespace WindowsBuilder.WindowsUnattendObject
 	public class LocalAccounts {
 		[XmlElement(ElementName="LocalAccount", Namespace="urn:schemas-microsoft-com:unattend")]
 		public LocalAccount LocalAccount { get; set; }
+
+		public LocalAccounts() {
+			LocalAccount = new LocalAccount();
+		}
 	}
 
 	[XmlRoot(ElementName="UserAccounts", Namespace="urn:schemas-microsoft-com:unattend")]
 	public class UserAccounts {
 		[XmlElement(ElementName="LocalAccounts", Namespace="urn:schemas-microsoft-com:unattend")]
 		public LocalAccounts LocalAccounts { get; set; }
+
+		public UserAccounts() {
+			LocalAccounts = new LocalAccounts();
+		}
 	}
 
 	[XmlRoot(ElementName="FirewallGroup", Namespace="urn:schemas-microsoft-com:unattend")]

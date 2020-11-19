@@ -19,6 +19,7 @@ namespace WindowsBuilder
         {
             string language = "EN-US";
             string locale = "0409:00000409";
+            string organization = "L4WS";
 
             Unattend unattendObject = new Unattend();
 
@@ -32,19 +33,23 @@ namespace WindowsBuilder
             
             /// SETUP UI COMPONENT
             SetupUIComponent setupUIComponent = new SetupUIComponent();
+            setupUIComponent.Name = "Microsoft-Windows-International-Core-WinPE";
+
             setupUIComponent.SetupUILanguage.UILanguage = "EN-US";
             setupUIComponent.InputLocale    = locale;
             setupUIComponent.SystemLocale   = language;
             setupUIComponent.UILanguage     = language;
             setupUIComponent.UserLocale     = language;
 
-            windowsPESettings.Component = new System.Collections.Generic.List<Component>();
-
 
             /// SETUP DISK COMPONENT
 
             SetupDiskComponent setupDiskComponent = new SetupDiskComponent();
+            setupDiskComponent.Name = "Microsoft-Windows-Setup";
+            
             Disk disk = new Disk();
+            disk.DiskID = "0";
+            disk.WillWipeDisk = "true";
 
             CreatePartition primaryPartition    = new CreatePartition();
             CreatePartition efiPartition        = new CreatePartition();
@@ -106,10 +111,64 @@ namespace WindowsBuilder
 
             setupDiskComponent.DiskConfiguration.Disk = disk;
 
+            //SETUP USER DATA
+            UserData userData = new UserData();
+            userData.AcceptEula = "true";
+            userData.Organization = organization;
+            userData.setProductKey("VK7JG-NPHTM-C97JM-9MPGT-3V66T");
+            setupDiskComponent.UserData = userData;
+
+            //SETUP IMAGE INSTALL
+            ImageInstall imageInstall = new ImageInstall();
+            InstallTo installTo = new InstallTo();
+            installTo.DiskID = "0";
+            installTo.PartitionID = "4";
+            imageInstall.setInstallTo(installTo);
+            setupDiskComponent.ImageInstall = imageInstall;
+
+            //SETUP OOBE
+            OobeUIComponent oobeUIComponent = new OobeUIComponent();
+            oobeUIComponent.Name = "Microsoft-Windows-International-Core";
+
+            oobeUIComponent.InputLocale = locale;
+            oobeUIComponent.SystemLocale = language;
+            oobeUIComponent.UILanguage = language;
+            oobeUIComponent.UserLocale = language;
+
+            //SETUP USER ACCOUNT
+            OobeAccountsComponent oobeAccountsComponent = new OobeAccountsComponent();
+            oobeAccountsComponent.Name = "Microsoft-Windows-Shell-Setup";
+
+            UserAccounts userAccounts = new UserAccounts();
+            LocalAccounts localAccounts = new LocalAccounts();
+            LocalAccount localAccount = new LocalAccount();
+            
+            localAccount.Action = "add";
+            localAccount.Description = "Local admin account";
+            localAccount.DisplayName = "LS4WAdmin";
+            localAccount.Group = "Administrators";
+            localAccount.Name = "LS4WAdmin";
+
+            localAccounts.LocalAccount = localAccount;
+            userAccounts.LocalAccounts = localAccounts;
+            oobeAccountsComponent.UserAccounts = userAccounts;
+
+
+            OOBE oOBE = new OOBE();
+            oOBE.HideEULAPage = "true";
+            oOBE.HideOEMRegistrationScreen = "true";
+            oOBE.HideOnlineAccountScreens = "true";
+            oOBE.ProtectYourPC = "1";
+            oOBE.HideWirelessSetupInOOBE = "true";
+            oobeAccountsComponent.OOBE = oOBE;
+
+
 
             //Add components to settings
             windowsPESettings.Component.Add(setupUIComponent);
             windowsPESettings.Component.Add(setupDiskComponent);
+            oobeSettings.Component.Add(oobeUIComponent);
+            oobeSettings.Component.Add(oobeAccountsComponent);
 
             unattendObject.Settings = new System.Collections.Generic.List<Settings>();
             unattendObject.Settings.Add(windowsPESettings);
