@@ -164,10 +164,29 @@ namespace WindowsBuilder
             //SETUP USER ACCOUNT
             OobeAccountsComponent oobeAccountsComponent = new OobeAccountsComponent();
 
+			oobeAccountsComponent.AutoLogon.Enabled = "true";
+			oobeAccountsComponent.AutoLogon.LogonCount = "1";
+			oobeAccountsComponent.AutoLogon.Username = "Administrator";
+			Password defaultAdminPassword = new Password();
+			defaultAdminPassword.Value = "password";
+			defaultAdminPassword.PlainText = "true";
+			oobeAccountsComponent.AutoLogon.Password = defaultAdminPassword;
+
+			oobeAccountsComponent.Name = "Microsoft-Windows-Shell-Setup";
+			oobeAccountsComponent.ProcessorArchitecture = "amd64";
+			oobeAccountsComponent.PublicKeyToken = "31bf3856ad364e35";
+			oobeAccountsComponent.Language = "neutral";
+			oobeAccountsComponent.VersionScope = "nonSxS";
+
             UserAccounts userAccounts = new UserAccounts();
             LocalAccounts localAccounts = new LocalAccounts();
             LocalAccount localAccount = new LocalAccount();
             
+			AdministratorPassword administratorPassword = new AdministratorPassword();
+			administratorPassword.Value = "password";
+			administratorPassword.PlainText = "true";
+			userAccounts.AdministratorPassword = administratorPassword;
+
             localAccount.Action = "add";
             localAccount.Description = "Local admin account";
             localAccount.DisplayName = options.username;
@@ -186,6 +205,8 @@ namespace WindowsBuilder
 
             OOBE oOBE = new OOBE();
             oOBE.HideEULAPage = "true";
+			oOBE.HideLocalAccountScreen = "true";
+			oOBE.NetworkLocation = "Home";
             oOBE.HideOEMRegistrationScreen = "true";
             oOBE.HideOnlineAccountScreens = "true";
             oOBE.ProtectYourPC = "1";
@@ -236,7 +257,7 @@ namespace WindowsBuilder
             //Add components to settings
             windowsPESettings.Component.Add(setupUIComponent);
             windowsPESettings.Component.Add(setupDiskComponent);
-            oobeSettings.Component.Add(oobeUIComponent);
+            // oobeSettings.Component.Add(oobeUIComponent);
             oobeSettings.Component.Add(oobeAccountsComponent);
             specializeSettings.Component.Add(systemInformationComponent);
             specializeSettings.Component.Add(terminalServicesComponent);

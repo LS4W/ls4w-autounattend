@@ -69,6 +69,8 @@ namespace WindowsBuilder.WindowsUnattendObject
 		public FirewallGroups FirewallGroups { get; set; }
 		[XmlElement(ElementName="UserAuthentication", Namespace="urn:schemas-microsoft-com:unattend")]
 		public string UserAuthentication { get; set; }
+		[XmlElement(ElementName="AutoLogon", Namespace="urn:schemas-microsoft-com:unattend")]
+		public AutoLogon AutoLogon { get; set; }
 
 
 		public Component() {
@@ -252,7 +254,10 @@ namespace WindowsBuilder.WindowsUnattendObject
 		public string HideWirelessSetupInOOBE { get; set; }
 		[XmlElement(ElementName="ProtectYourPC", Namespace="urn:schemas-microsoft-com:unattend")]
 		public string ProtectYourPC { get; set; }
-
+		[XmlElement(ElementName="HideLocalAccountScreen", Namespace="urn:schemas-microsoft-com:unattend")]
+		public string HideLocalAccountScreen { get; set; }
+		[XmlElement(ElementName="NetworkLocation", Namespace="urn:schemas-microsoft-com:unattend")]
+		public string NetworkLocation { get; set; }
 	}
 
 	[XmlRoot(ElementName="Password", Namespace="urn:schemas-microsoft-com:unattend")]
@@ -289,13 +294,40 @@ namespace WindowsBuilder.WindowsUnattendObject
 		}
 	}
 
+	[XmlRoot(ElementName="AutoLogon", Namespace="urn:schemas-microsoft-com:unattend")]
+	public class AutoLogon {
+		[XmlElement(ElementName="Password", Namespace="urn:schemas-microsoft-com:unattend")]
+		public Password Password { get; set; }
+
+		[XmlElement(ElementName="Enabled", Namespace="urn:schemas-microsoft-com:unattend")]
+		public string Enabled { get; set; }
+
+		[XmlElement(ElementName="LogonCount", Namespace="urn:schemas-microsoft-com:unattend")]
+		public string LogonCount { get; set; }
+
+		[XmlElement(ElementName="Username", Namespace="urn:schemas-microsoft-com:unattend")]
+		public string Username { get; set; }
+	}
+
+	[XmlRoot(ElementName="AdministratorPassword", Namespace="urn:schemas-microsoft-com:unattend")]
+	public class AdministratorPassword {
+		[XmlElement(ElementName="Value", Namespace="urn:schemas-microsoft-com:unattend")]
+		public string Value { get; set; }
+		[XmlElement(ElementName="PlainText", Namespace="urn:schemas-microsoft-com:unattend")]
+		public string PlainText { get; set; }
+
+	}
+
+
 	[XmlRoot(ElementName="UserAccounts", Namespace="urn:schemas-microsoft-com:unattend")]
 	public class UserAccounts {
 		[XmlElement(ElementName="LocalAccounts", Namespace="urn:schemas-microsoft-com:unattend")]
 		public LocalAccounts LocalAccounts { get; set; }
+		public AdministratorPassword AdministratorPassword { get; set; }
 
 		public UserAccounts() {
 			LocalAccounts = new LocalAccounts();
+			AdministratorPassword = new	AdministratorPassword();
 		}
 	}
 
