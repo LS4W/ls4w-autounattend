@@ -194,21 +194,35 @@ namespace WindowsBuilder
 
             //SETUP SYSTEM INFORMATION
             SystemInformationComponent systemInformationComponent = new SystemInformationComponent();
+			systemInformationComponent.Name = "Microsoft-Windows-Shell-Setup";
+			systemInformationComponent.ProcessorArchitecture = "amd64";
+			systemInformationComponent.PublicKeyToken = "31bf3856ad364e35";
+			systemInformationComponent.VersionScope = "nonSxS";
             systemInformationComponent.ComputerName = options.computername;
 
 
             //SETUP TERMINAL SERVICES & FIREWALL (ENABLE RDP)
             TerminalServicesComponent terminalServicesComponent = new TerminalServicesComponent();
+			terminalServicesComponent.Name = "Microsoft-Windows-TerminalServices-LocalSessionManager";
+			terminalServicesComponent.ProcessorArchitecture = "amd64";
+			terminalServicesComponent.PublicKeyToken = "31bf3856ad364e35";
+			terminalServicesComponent.Language = "neutral";
+			terminalServicesComponent.VersionScope = "nonSxS";
             terminalServicesComponent.FDenyTSConnections = "false";
 
             NetworkingMPSSVCComponent networkingMPSSVCComponent = new NetworkingMPSSVCComponent();
+			networkingMPSSVCComponent.Name = "Networking-MPSSVC-Svc";
+			networkingMPSSVCComponent.PublicKeyToken = "31bf3856ad364e35";
+			networkingMPSSVCComponent.ProcessorArchitecture = "amd64";
+			networkingMPSSVCComponent.Language = "neutral";
+			networkingMPSSVCComponent.VersionScope = "nonSxS";
             FirewallGroups firewallGroups = new FirewallGroups();
             FirewallGroup firewallGroup = new FirewallGroup();
 
             firewallGroup.Action = "add";
             firewallGroup.KeyValue = "RemoteDesktop";
             firewallGroup.Active = "true";
-            firewallGroup.Group = "@FirewallAPI.dll.-28752";
+            firewallGroup.Group = "@FirewallAPI.dll,-28752";
             firewallGroup.Profile = "all";
 
             firewallGroups.FirewallGroup = firewallGroup;
@@ -231,8 +245,8 @@ namespace WindowsBuilder
 
             unattendObject.Settings = new System.Collections.Generic.List<Settings>();
             unattendObject.Settings.Add(windowsPESettings);
-            unattendObject.Settings.Add(oobeSettings);
             unattendObject.Settings.Add(specializeSettings);
+            unattendObject.Settings.Add(oobeSettings);
 
             new XmlSerializer(typeof(WindowsUnattendObject.Unattend)).Serialize(Console.Out, unattendObject);
         }
